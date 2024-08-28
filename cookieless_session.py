@@ -70,20 +70,17 @@ class FuzzRequester:
         async with semaphore:
             await self.send_request(session, url, word)
 
-def read_urls_from_file(file_path: str) -> List[str]:
+def read_lines_from_file(file_path: str) -> List[str]:
     with open(file_path, 'r') as file:
         return [line.strip() for line in file.readlines()]
 
 @click.command()
 @click.option('--file-path', type=click.Path(exists=True), prompt='Path to the URLs file', help='File containing the list of URLs.')
+@click.option('--wordlist-path', type=click.Path(exists=True), prompt='Path to wordlist file', help='File containing the list of words to fuzz.')
 @click.option('--throttle', default=0.1, help='Throttle time in seconds between requests (default: 0.1).')
-def main(file_path, throttle):
-    urls = read_urls_from_file(file_path)
-    word_list = [
-        # List of DLL names
-        "Newtonsoft.Json",
-        "Newtonsoft"
-    ]
+def main(file_path, wordlist_path, throttle):
+    urls = read_lines_from_file(file_path)
+    word_list = read_lines_from_file(wordlist_path)
     requester = FuzzRequester(urls, word_list, throttle)
     asyncio.run(requester.run())
 

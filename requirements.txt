@@ -1,0 +1,4 @@
+aiohttp
+click
+tqdm
+colorama

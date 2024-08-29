@@ -5,13 +5,18 @@ from typing import List
 from tqdm.asyncio import tqdm_asyncio
 import logging
 from colorama import Fore, Style
+import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Create a file handler for logging successful findings
-file_handler = logging.FileHandler('found_urls.log', mode='a')
+log_dir = 'iis_results'
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+file_handler = logging.FileHandler(os.path.join(log_dir, 'found_urls.log'), mode='a')
 file_handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(message)s')
 file_handler.setFormatter(formatter)
@@ -41,7 +46,7 @@ class FuzzRequester:
 
                         if url not in found_log:
                             found_log.append(url)
-                            with open('iis_results/found_urls.log', 'a') as file:
+                            with open(os.path.join(log_dir, 'found_urls.log'), 'a') as file:
                                 file.write(f'{url}\n')
                 elif response.status != 404:
                     # Handle non-404 statuses if needed
